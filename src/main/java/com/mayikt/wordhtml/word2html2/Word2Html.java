@@ -27,6 +27,7 @@ import java.util.*;
  * @description TODO
  * @Date 2019/8/27 11:10
  * @Version 1.0
+ *  这个word转换为html功能可以
  */
 public class Word2Html {
     /**
@@ -76,7 +77,7 @@ public class Word2Html {
      */
     @Test
     public void wordToHtml() throws Exception {
-        String filePath = "D:\\cz\\桌面资料\\工作资料\\";
+        String filePath = "D:\\cz\\壮\\桌面资料\\工作资料\\";
         String fileName = "流程复盘节点确定.doc";
         String htmlName = "流程复盘节点确定.html";
         final String imagePath = filePath + "/image/";
@@ -140,7 +141,7 @@ public class Word2Html {
     //读取html文件,读取之后内嵌式css转内联式css
     @Test
     public void fun() throws IOException {
-        File file = new File("D:\\cz\\桌面资料\\工作资料\\流程复盘节点确定.html");
+        File file = new File("D:\\cz\\壮\\桌面资料\\工作资料\\流程复盘节点确定.html");
         InputStream in = new FileInputStream(file);
         InputStreamReader reader = new InputStreamReader(in);
         BufferedReader br = new BufferedReader(reader);

@@ -55,7 +55,7 @@ public class Word2Html {
         try {
             //被转换的word文件
             File convertedWordFile = new File(
-                    "D:\\cz\\壮\\5期资料\\001-蚂蚁课堂&每特教育-第五期互联网架构-精讲设计模式之策略模式\\精讲设计模式之策略模式.doc");
+                    "D:\\cz\\壮\\桌面资料\\工作资料\\流程复盘节点确定.doc");
             convert2Html(convertedWordFile, outputFolder, outputPictureFolder);
         } catch (Exception e) {
             e.printStackTrace();
