@@ -16,17 +16,17 @@ import java.util.Set;
  * @Date 2019/9/2 10:18
  * @Version 1.0
  *
- *  这个html转换word是成功的，图片也有，唯一缺点是样式必须是嵌入式样式，不然样式无法显示
+ *  这个html转换word是成功的，图片也有
  */
 public class Html2Word3 {
     public static void main(String[] args) throws IOException {
         //html拼接出word内容
         String content = "<html>";
-        String title = "标题";
+        //String title = "标题";
         String cx = getBodyString();
-        //html拼接出word内容
-        content+="<div style=\"text-align: center\"><span style=\"font-size: 24px\"><span style=\"font-family: 黑体\">"+title+"<br /> <br /> </span></span></div>";
-        content+="<div style=\"text-align: left\"><span >"+cx+"<br /> <br /> </span></span></div>";
+        //html拼接出word内容  这个标题没必要要
+        /*content+="<div style=\"text-align: center\"><span style=\"font-size: 24px\"><span style=\"font-family: 黑体\">"+title+"<br /> <br /> </span></span></div>";
+        content+="<div style=\"text-align: left\"><span >"+cx+"<br /> <br /> </span></span></div>";*/
         //插入分页符
         content += "<span lang=EN-US style='font-size:12.0pt;line-height:150%;mso-fareast-font-family:宋体;mso-font-kerning:1.0pt;mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;mso-bidi-language:AR-SA'><br clear=all style='page-break-before:always'></span>";
         content += "<p class=MsoNormal style='line-height:150%'><span lang=EN-US style='font-size:12.0pt;line-height:150%'><o:p> </o:p></span></p>";
@@ -37,15 +37,16 @@ public class Html2Word3 {
         POIFSFileSystem poifs = new POIFSFileSystem();
         DirectoryEntry directory = poifs.getRoot();
         DocumentEntry documentEntry = directory.createDocument("WordDocument", bais);
-        //输出文件
-        String name = "导出知识";
-            /*response.reset();
-            response.setHeader("Content-Disposition",
-                    "attachment;filename=" +
-                            new String( (name + ".doc").getBytes(),
-                                    "iso-8859-1"));
-            response.setContentType("application/msword");
-            OutputStream ostream = response.getOutputStream();*/
+        bais.close();
+        //输出文件,
+        /*一般这个是会传到前端去直接下载的，所以这个用的比较多
+        response.reset();
+        response.setHeader("Content-Disposition",
+                "attachment;filename=" +
+                        new String( (name + ".doc").getBytes(),
+                                "iso-8859-1"));
+        response.setContentType("application/msword");
+        OutputStream ostream = response.getOutputStream();*/
         //输出文件的话，new一个文件流
         FileOutputStream ostream = new FileOutputStream("D:/cccc.doc");
         poifs.writeFilesystem(ostream);

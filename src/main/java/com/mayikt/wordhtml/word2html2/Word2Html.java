@@ -1,5 +1,6 @@
 package com.mayikt.wordhtml.word2html2;
 
+import com.mayikt.wordhtml.utils.DateUtil;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.converter.PicturesManager;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
@@ -91,6 +92,10 @@ public class Word2Html {
 
             public String savePicture(byte[] content, PictureType pictureType, String suggestedName, float widthInches,
                                       float heightInches) {
+                //首先要判断图片是否能识别
+                if(pictureType.equals(PictureType.UNKNOWN)){
+                    return "";
+                }
                 File imgPath=new File(imagePath);
                 if (!imgPath.exists()) {//目录不存在则创建目录
                     imgPath.mkdirs();
@@ -110,6 +115,7 @@ public class Word2Html {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                //这个地方一般是将文件上传到第三方存储文件的服务器中，然后返回对应图片地址
                 return imagePath+suggestedName;
             }
         });
@@ -135,7 +141,38 @@ public class Word2Html {
         //System.out.println(content);
         //baos.close();
         outStream.close();
+        //这地方如果将图片上传到第三方文件服务器的话可以将本地临时存放的图片进行删除
+        deleteFile(imagePath,
+                DateUtil.date2str(DateUtil.YYYYMMDD),
+                DateUtil.getYesterDay(DateUtil.YYYYMMDD));
         System.out.println("转换完成");
+    }
+
+    public void deleteFile(String imgPath,String nowDate,String yesterDay){
+        File file = new File(imgPath);
+        File[] files = file.listFiles();
+        for (File der : files) {
+            if(!der.getName().contains(nowDate) && !der.getName().contains(yesterDay)){
+                //将不是今天和昨天的文件夹里面的文件进行删除，然后删除文件夹
+                //注：删除文件夹之前一定要先将文件夹里面的所有的东西全部删除这样才能删除此文件夹
+                deleteAllFile(der);  //删除文件夹里面所有的文件
+                //删除此文件夹
+                der.delete();
+
+            }
+        }
+    }
+
+    public void deleteAllFile(File der){
+        if(der.isDirectory()){
+            File[] files = der.listFiles();
+            //这个里面循环一层的前提条件是全部是文件，没有文件夹
+            for (File children : files) {
+                if(children.isFile()){
+                    children.delete();
+                }
+            }
+        }
     }
 
     //读取html文件,读取之后内嵌式css转内联式css
@@ -154,6 +191,10 @@ public class Word2Html {
         reader.close();
         in.close();
         System.out.println(buff.toString());
+        changeStyle(buff);
+    }
+
+    public void changeStyle(StringBuffer buff){
         StringBuffer buffStyle = new StringBuffer();
         //截取样式代码
         buffStyle.append(buff.substring(buff.indexOf("<style type=\"text/css\">") +23 ,buff.indexOf("style",buff.indexOf("<style type=\"text/css\">") +23 )-2));
@@ -179,7 +220,16 @@ public class Word2Html {
                 int length = bodyBuffer.toString().split(key).length - 1 ;
                 int temp = 0 ;
                 for (int i = 0 ; i < length ; i++){
+                    //首先判断是否完全匹配这个样式的class标识
+                    //由于word转换为html的时候他会自动生成class的标识  比如 p1,p2,p3,p4,p10,p11这样的话使用contains方法
+                    //p1就会被p11匹配到，这样样式就会乱掉，所以在添加行内样式之前必须要进行完全匹配
                     temp = bodyBuffer.indexOf(key,temp);
+                    String isComplete = bodyBuffer.substring(temp, temp + key.length() + 1);
+                    //这个地方key+" "意思是代表可能一个标签里面有多个class标识 比如 class = "p2 p3 p4"
+                    if(!isComplete.equals(key+"\"") && !isComplete.equals(key+" ")){
+                        //这种就代表不是完全匹配
+                        continue;
+                    }
                     //这个是每次查询到的位置，判断此标签中是否添加了style标签
                     String isContaionStyle = bodyBuffer.substring(temp,bodyBuffer.indexOf(">",temp));
                     if(isContaionStyle.contains("style")){
@@ -192,11 +242,28 @@ public class Word2Html {
                         int styleIndex = bodyBuffer.indexOf("\"",temp);
                         bodyBuffer.insert(styleIndex+1," style=\""+styleMap.get(key)+"\"");
                     }
-                    temp++;
+                    temp += key.length() + 1;
                 }
             }
         }
         System.out.println(bodyBuffer.toString());
+        changePicture(bodyBuffer);
+    }
+
+    //更换图片的路径
+    public void changePicture(StringBuffer buffer){
+        //查询一个有多少个图片
+        int length = buffer.toString().split("<img src=\"").length -1 ;
+        int temp = 0 ;
+        for (int i = 0; i < length; i++) {
+            temp = buffer.indexOf("<img src=\"",temp);
+            String srcContent = buffer.substring(temp + 10, buffer.indexOf("style", temp + 10));
+            //获取第三方文件服务器的路径,比如如下realSrc
+            String realSrc = "";
+            //将路径进行替换
+            buffer.replace(temp + 10 ,buffer.indexOf("style",temp + 10),realSrc+"\"");
+            temp ++;
+        }
     }
 
     @Test
