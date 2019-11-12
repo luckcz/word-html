@@ -38,8 +38,8 @@ public class Word2Html {
      */
     @Test
     public void word2007ToHtml() throws Exception {
-        String filePath = "E:/学习、练习数据文件夹/test/";
-        String fileName = "SpringIOC解析.docx";
+        String filePath = "D:\\cz\\壮\\桌面资料\\工作资料\\";
+        String fileName = "流程复盘节点确定.docx";
         String htmlName = "SpringIOC解析.html";
         final String file = filePath + fileName;
         File f = new File(file);
@@ -80,7 +80,7 @@ public class Word2Html {
     public void wordToHtml() throws Exception {
         String filePath = "D:\\cz\\壮\\桌面资料\\工作资料\\";
         String fileName = "流程复盘节点确定.doc";
-        String htmlName = "流程复盘节点确定.html";
+        String htmlName = "流程复盘节点确定111111.html";
         final String imagePath = filePath + "/image/";
         final String file = filePath + fileName;
         InputStream input = new FileInputStream(new File(file));

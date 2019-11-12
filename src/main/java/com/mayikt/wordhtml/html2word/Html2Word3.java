@@ -37,7 +37,6 @@ public class Html2Word3 {
         POIFSFileSystem poifs = new POIFSFileSystem();
         DirectoryEntry directory = poifs.getRoot();
         DocumentEntry documentEntry = directory.createDocument("WordDocument", bais);
-        bais.close();
         //输出文件,
         /*一般这个是会传到前端去直接下载的，所以这个用的比较多
         response.reset();
